@@ -1,7 +1,23 @@
 #version 300 es
 
 precision mediump float;
+in vec2 vTexCoord;
 
+uniform sampler2D uTextura;   // nombre fijado por ObjecteTexturat
+uniform vec4 uTint;           // nombre que elegimos nosotros (lo usa el TODO 9b)
+
+out vec4 fragColor;
+
+void main() {
+    vec4 color = texture(uTextura, vTexCoord) * uTint;
+
+    // Píxeles casi transparentes: no escribimos nada
+    if (color.a < 0.01) {
+        discard;
+    }
+
+    fragColor = color;
+}
 // TODO (8/10b): fragment shader de la interficie.
 //
 //   Rep la coordenada de textura interpolada, el sampler de la textura i un

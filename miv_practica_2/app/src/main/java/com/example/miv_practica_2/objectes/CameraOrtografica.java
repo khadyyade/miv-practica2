@@ -58,8 +58,18 @@ public class CameraOrtografica extends Camera {
         //   queda com la identitat que hi posa el constructor de la classe base.
         //
         //   Acaba cridant combina(), i protegeix-te de les dimensions zero.
+        if (amplada == 0 || alcada == 0) {
+            return; // durante la rotación de pantalla puede llegar 0: evitamos dividir por 0
+        }
 
-        throw new UnsupportedOperationException("TODO (7/10): CameraOrtografica.actualitzaProjeccio()");
+        // Coordenadas en PÍXELES con el origen ARRIBA a la izquierda:
+        // bottom = alcada y top = 0 (intercambiados respecto a lo "natural").
+        Matrix.orthoM(matriuProjeccio, 0,
+                0.0f, amplada,          // left, right
+                alcada, 0.0f,           // bottom, top  ← el truco
+                PLA_PROPER, PLA_LLUNYA); // near = -1, far = 1
+
+        combina();
     }
 
     /** Amplada de la superficie en pixels, util per ancorar elements a la dreta. */

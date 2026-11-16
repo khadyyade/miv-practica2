@@ -1,6 +1,6 @@
 #version 300 es
 
-// TODO (2/10): vertex shader del model il luminat.
+// TODO (2/10): vertex shader del model il luminat. - DONE
 //
 //   Es el teu textura.ver de la practica anterior, pero el fragment shader
 //   ara necessita dues coses mes per poder calcular la llum.
@@ -36,3 +36,23 @@
 //
 //     d) Calcula gl_Position aprofitant la posicio de mon que ja tens, en
 //        comptes de tornar a multiplicar per uModel.
+
+layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec2 aTexCoord;
+layout(location = 2) in vec3 aNormal;
+
+uniform mat4 uModel;
+uniform mat4 uVistaProjeccio;
+uniform mat4 uMatriuNormal;
+
+out vec2 vTexCoord;
+out vec3 vNormalMon;    // normal en coordenadas de MUNDO
+out vec3 vPosicioMon;   // posición en coordenadas de MUNDO
+
+void main() {
+    vec4 posicioMon = uModel * vec4(aPosition, 1.0);
+    vPosicioMon = posicioMon.xyz;
+    vNormalMon = mat3(uMatriuNormal) * aNormal;
+    vTexCoord = aTexCoord;
+    gl_Position = uVistaProjeccio * posicioMon;
+}

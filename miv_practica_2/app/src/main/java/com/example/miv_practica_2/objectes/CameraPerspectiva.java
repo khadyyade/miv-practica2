@@ -108,7 +108,32 @@ public class CameraPerspectiva extends Camera {
         //   zero (dividiries per zero en calcular la proporcio) i un factor
         //   negatiu o nul.
 
-        throw new UnsupportedOperationException("TODO (5/10): CameraPerspectiva.apropa()");
+        if (factor <= 0.0f) {
+            return; // un factor nulo o negativo no tiene sentido
+        }
+
+        // a) Vector objetivo -> cámara y distancia actual
+        float vx = posicio[0] - objectiu[0];
+        float vy = posicio[1] - objectiu[1];
+        float vz = posicio[2] - objectiu[2];
+        float distancia = (float) Math.sqrt(vx * vx + vy * vy + vz * vz);
+
+        if (distancia < 1e-6f) {
+            return; // cámara encima del objetivo: evitamos dividir por 0
+        }
+
+        // b) + c) Distancia nueva, limitada
+        float novaDistancia = distancia / factor;
+        novaDistancia = Math.max(DISTANCIA_MINIMA, Math.min(DISTANCIA_MAXIMA, novaDistancia));
+
+        // d) Reescalamos el vector por la proporción nueva/vieja
+        float proporcio = novaDistancia / distancia;
+        posicio[0] = objectiu[0] + vx * proporcio;
+        posicio[1] = objectiu[1] + vy * proporcio;
+        posicio[2] = objectiu[2] + vz * proporcio;
+
+        // e) El objetivo no se mueve; rehacemos la matriz de vista
+        actualitzaVista();
     }
 
     /** Distancia actual entre la camera i el seu objectiu. */

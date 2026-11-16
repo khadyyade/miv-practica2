@@ -1,5 +1,16 @@
 #version 300 es
+layout(location = 0) in vec3 aPosition;   // quad unitario (0..1)
+layout(location = 1) in vec2 aTexCoord;
 
+uniform mat4 uModel;           // lleva el quad a su posición/tamaño en píxeles
+uniform mat4 uVistaProjeccio;  // píxeles -> NDC (la ortográfica del paso 5)
+
+out vec2 vTexCoord;
+
+void main() {
+    vTexCoord = aTexCoord;
+    gl_Position = uVistaProjeccio * uModel * vec4(aPosition, 1.0);
+}
 // TODO (8/10a): vertex shader de la interficie.
 //
 //   Es el mes senzill de tots els que has escrit. Rep dos atributs, posicio

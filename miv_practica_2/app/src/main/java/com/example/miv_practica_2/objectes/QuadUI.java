@@ -3,7 +3,7 @@ package com.example.miv_practica_2.objectes;
 import android.content.res.AssetManager;
 import android.opengl.GLES30;
 
-import com.example.skeleton.shaders.TipusShader;
+import com.example.miv_practica_2.shaders.TipusShader;
 
 /**
  * Element pla d'interficie: un rectangle texturat que es dibuixa amb la camera
@@ -89,7 +89,13 @@ public class QuadUI extends ObjecteTexturat {
         //   disposicio diferent. Si l'element surt deformat o amb la textura
         //   mal repartida, el problema es aqui.
 
-        throw new UnsupportedOperationException("TODO (9/10a): QuadUI.configuraAtributs()");
+        // Atributo 0: posición (vec3), empieza en el byte 0
+        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, STRIDE_UI, OFFSET_POSICIO);
+        GLES30.glEnableVertexAttribArray(0);
+
+        // Atributo 1: coordenada de textura (vec2), empieza en el byte 12
+        GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT, false, STRIDE_UI, OFFSET_TEXTURA);
+        GLES30.glEnableVertexAttribArray(1);
     }
 
     @Override
@@ -106,6 +112,6 @@ public class QuadUI extends ObjecteTexturat {
         //   amb la textura que hi hagi enllacada en aquell moment, que podria
         //   ser la d'un model qualsevol de l'escena.
 
-        throw new UnsupportedOperationException("TODO (9/10b): QuadUI.preparaDibuix()");
+        GLES30.glUniform4f(programa.getUniformLocation("uTint"),tint[0], tint[1], tint[2], tint[3]);
     }
 }

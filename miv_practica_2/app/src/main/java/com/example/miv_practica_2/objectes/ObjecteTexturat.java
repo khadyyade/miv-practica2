@@ -3,9 +3,9 @@ package com.example.miv_practica_2.objectes;
 import android.content.res.AssetManager;
 import android.opengl.GLES30;
 
-import com.example.skeleton.shaders.GestorShaders;
-import com.example.skeleton.shaders.TipusShader;
-import com.example.skeleton.textures.Textura;
+import com.example.miv_practica_2.shaders.GestorShaders;
+import com.example.miv_practica_2.shaders.TipusShader;
+import com.example.miv_practica_2.textures.Textura;
 
 /**
  * Base dels objectes que es pinten amb una textura.

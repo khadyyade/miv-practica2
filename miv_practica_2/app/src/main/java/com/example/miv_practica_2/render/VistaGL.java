@@ -72,7 +72,16 @@ public class VistaGL extends GLSurfaceView {
         //      ACTION_MOVE: el gest no s'arribaria a formar mai i no veuries
         //      cap error enlloc. Es l'error classic amb els gestos.
 
-        throw new UnsupportedOperationException("TODO (6/10a): onTouchEvent()");
+        // a) El detector de pellizco lo recibe siempre
+        detectorPincament.onTouchEvent(event);
+
+        // b) El de arrastre, solo si no hay un pellizco en curso
+        if (!detectorPincament.isInProgress()) {
+            detectorArrossegament.onTouchEvent(event);
+        }
+
+        // c) true: queremos seguir recibiendo esta secuencia de eventos
+        return true;
     }
 
     /**
@@ -103,7 +112,12 @@ public class VistaGL extends GLSurfaceView {
         //
         //   Fixa't que el parametre es "final": el Runnable el captura.
 
-        throw new UnsupportedOperationException("TODO (6/10b): demanaApropar()");
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                renderitzador.apropaCamera(factor);
+            }
+        });
     }
 
     /**
@@ -143,7 +157,19 @@ public class VistaGL extends GLSurfaceView {
             //
             //   d) Retorna true.
 
-            throw new UnsupportedOperationException("TODO (6/10c): onScroll()");
+            int alcada = getHeight();
+            if (alcada == 0) {
+                return true;
+            }
+
+            // distanciaY = anterior - actual: arrastrar ARRIBA da un valor POSITIVO
+            float fraccio = distanciaY / alcada;
+
+            // Factor multiplicativo alrededor de 1: arriba > 1 (acerca), abajo < 1 (aleja)
+            float factor = (float) Math.exp(fraccio * SENSIBILITAT_ARROSSEGAMENT);
+
+            demanaApropar(factor);
+            return true;
         }
     }
 

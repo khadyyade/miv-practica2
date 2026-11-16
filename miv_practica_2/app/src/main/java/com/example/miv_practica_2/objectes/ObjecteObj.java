@@ -3,7 +3,7 @@ package com.example.miv_practica_2.objectes;
 import android.content.res.AssetManager;
 import android.opengl.GLES30;
 
-import com.example.skeleton.shaders.TipusShader;
+import com.example.miv_practica_2.shaders.TipusShader;
 
 /**
  * Model carregat d'un fitxer Wavefront OBJ i pintat amb una textura.

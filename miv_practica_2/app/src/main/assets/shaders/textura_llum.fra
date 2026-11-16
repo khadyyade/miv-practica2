@@ -1,6 +1,6 @@
 #version 300 es
 
-precision mediump float;
+precision highp float;   // abans: mediump
 
 // Ha de coincidir amb Illuminacio.MAX_LLUMS_PUNTUALS. Un array d'un shader ha
 // de tenir mida constant de compilacio: GLSL no admet mides variables.
@@ -16,7 +16,72 @@ struct LlumPuntual {
     float atenuacioLineal;
     float atenuacioQuadratica;
 };
+in vec2 vTexCoord;
+in vec3 vNormalMon;
+in vec3 vPosicioMon;
 
+// noms ja fixats a ObjecteTexturat
+uniform sampler2D uTextura;
+uniform float uBrillantor;
+
+uniform vec3 uAmbient;
+uniform vec3 uPosicioCamera;
+
+uniform vec3  uDireccioLlum;     // cap a on viatja la llum
+uniform vec3  uColorLlum;
+uniform float uIntensitatLlum;
+
+uniform LlumPuntual uLlumsPuntuals[MAX_LLUMS_PUNTUALS];
+uniform int uNombreLlumsPuntuals;
+
+out vec4 fragColor;
+
+vec3 blinnPhong(vec3 N, vec3 V, vec3 L, vec3 colorLlum) {
+    float difus = max(dot(N, L), 0.0);
+
+    vec3 H = normalize(L + V);                       // vector medio
+    float especular = pow(max(dot(N, H), 0.0), uBrillantor);
+
+    // Sin difuso no hay especular (evita brillos en la cara oscura)
+    especular *= step(0.0001, difus);
+
+    return colorLlum * (difus + especular);
+}
+
+void main() {
+    vec3 N = normalize(vNormalMon);                   // re-normalitzar despres de interpolar
+    vec3 V = normalize(uPosicioCamera - vPosicioMon);
+
+    // ambient
+    vec3 llum = uAmbient;
+
+    // direccional: l' uniform diu va la llum
+    vec3 Ld = normalize(-uDireccioLlum);
+    llum += blinnPhong(N, V, Ld, uColorLlum * uIntensitatLlum);
+
+    // puntuals
+    for (int i = 0; i < MAX_LLUMS_PUNTUALS; i++) {
+        if (i >= uNombreLlumsPuntuals) {
+            break;
+        }
+
+        vec3 capALlum = uLlumsPuntuals[i].posicio - vPosicioMon;
+        float d = length(capALlum);
+        vec3 L = capALlum / max(d, 0.0001);           // normalitzar sense dividir per 0
+
+        float atenuacio = 1.0 / (1.0
+                + uLlumsPuntuals[i].atenuacioLineal * d
+                + uLlumsPuntuals[i].atenuacioQuadratica * d * d);
+
+        vec3 color = uLlumsPuntuals[i].color * uLlumsPuntuals[i].intensitat * atenuacio;
+        llum += blinnPhong(N, V, L, color);
+    }
+
+
+    vec4 albedo = texture(uTextura, vTexCoord);
+    //fragColor = vec4(N * 0.5 + 0.5, 1.0);
+    fragColor = vec4(albedo.rgb * llum, albedo.a);
+}
 // TODO (3/10): fragment shader amb il luminacio de Blinn-Phong.
 //
 //   ENTRADES. Les tres sortides del vertex shader, amb els mateixos noms i

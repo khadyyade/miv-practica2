@@ -3,10 +3,10 @@ package com.example.miv_practica_2.objectes;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
 
-import com.example.skeleton.llums.Illuminacio;
-import com.example.skeleton.shaders.GestorShaders;
-import com.example.skeleton.shaders.ProgramaShader;
-import com.example.skeleton.shaders.TipusShader;
+import com.example.miv_practica_2.llums.Illuminacio;
+import com.example.miv_practica_2.shaders.GestorShaders;
+import com.example.miv_practica_2.shaders.ProgramaShader;
+import com.example.miv_practica_2.shaders.TipusShader;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -396,7 +396,7 @@ public abstract class ObjecteGrafic {
      */
     private void recalculaMatriuNormal() {
 
-        // TODO (1/10): calcular la matriu de les normals.
+        // TODO (1/10): calcular la matriu de les normals -DONE
         //
         //   Es la TRANSPOSADA DE LA INVERSA de la matriu de model. Tens
         //   Matrix.invertM() i Matrix.transposeM(), i un camp "matriuAuxiliar"
@@ -423,7 +423,11 @@ public abstract class ObjecteGrafic {
         //   queda amb el contingut anterior o amb NaN, i un NaN en el calcul de
         //   llum s'escampa i et deixa el model negre o invisible.
 
-        throw new UnsupportedOperationException("TODO (1/10): recalculaMatriuNormal()");
+        if (Matrix.invertM(matriuAuxiliar, 0, matriuModel, 0)) {
+            Matrix.transposeM(matriuNormal, 0, matriuAuxiliar, 0);
+        } else {
+            Matrix.setIdentityM(matriuNormal, 0);
+        }
     }
 
     /**

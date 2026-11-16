@@ -2,7 +2,7 @@ package com.example.miv_practica_2.llums;
 
 import android.opengl.GLES30;
 
-import com.example.skeleton.shaders.ProgramaShader;
+import com.example.miv_practica_2.shaders.ProgramaShader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,7 @@ public class Illuminacio {
      */
     public void aplica(ProgramaShader programa, float[] posicioCamera) {
 
-        // TODO (4/10a): enviar la llum ambient i la posicio de la camera.
+        // TODO (4/10a): enviar la llum ambient i la posicio de la camera. - DONE
         //
         //   Tots dos son vec3, de manera que la crida es glUniform3f() amb les
         //   tres components per separat. Tens els noms dels uniforms al
@@ -80,16 +80,18 @@ public class Illuminacio {
         //   La posicio de la camera la necessita el component especular: un
         //   reflex brillant depen d'on es mira. Es per aixo que aquest metode
         //   la rep per parametre en lloc de buscar-se-la.
+        GLES30.glUniform3f(programa.getUniformLocation("uAmbient"),
+                ambient[0], ambient[1], ambient[2]);
 
+        GLES30.glUniform3f(programa.getUniformLocation("uPosicioCamera"),
+                posicioCamera[0], posicioCamera[1], posicioCamera[2]);
         aplicaDireccional(programa);
         aplicaPuntuals(programa);
-
-        throw new UnsupportedOperationException("TODO (4/10a): Illuminacio.aplica()");
     }
 
     private void aplicaDireccional(ProgramaShader programa) {
 
-        // TODO (4/10b): enviar la llum direccional.
+        // TODO (4/10b): enviar la llum direccional. - DONE
         //
         //   Tres uniforms: direccio (vec3), color (vec3) i intensitat (float).
         //
@@ -99,8 +101,25 @@ public class Illuminacio {
         //   calcul es fa igualment pero no aporta res, i el shader es queda
         //   sense branques. Als shaders, evitar condicionals sol sortir a
         //   compte perque tots els fragments del grup executen els dos camins.
+        int locDireccio   = programa.getUniformLocation("uDireccioLlum");
+        int locColor      = programa.getUniformLocation("uColorLlum");
+        int locIntensitat = programa.getUniformLocation("uIntensitatLlum");
 
-        throw new UnsupportedOperationException("TODO (4/10b): aplicaDireccional()");
+        if (llumDireccional == null) {
+            // Sense llum: intensitat 0. La direcció no pot ser (0,0,0) pq
+            // el shader fa normalize() i donaría NaN doncs enviem una qualaevol
+            GLES30.glUniform3f(locDireccio, 0.0f, -1.0f, 0.0f);
+            GLES30.glUniform3f(locColor, 0.0f, 0.0f, 0.0f);
+            GLES30.glUniform1f(locIntensitat, 0.0f);
+            return;
+        }
+
+        float[] d = llumDireccional.getDireccio();
+        float[] c = llumDireccional.getColor();
+
+        GLES30.glUniform3f(locDireccio, d[0], d[1], d[2]);
+        GLES30.glUniform3f(locColor, c[0], c[1], c[2]);
+        GLES30.glUniform1f(locIntensitat, llumDireccional.getIntensitat());
     }
 
     private void aplicaPuntuals(ProgramaShader programa) {
@@ -133,7 +152,29 @@ public class Illuminacio {
         //   camp es queda a zero sense cap avis: una llum amb color negre,
         //   posicio a l'origen o intensitat nul la, segons quin hagis fallat.
 
-        throw new UnsupportedOperationException("TODO (4/10c): aplicaPuntuals()");
+        GLES30.glUniform1i(programa.getUniformLocation("uNombreLlumsPuntuals"),
+                llumsPuntuals.size());
+
+        for (int i = 0; i < llumsPuntuals.size(); i++) {
+            LlumPuntual llum = llumsPuntuals.get(i);
+
+            // Nom complet del camp: "uLlumsPuntuals[0].posicio", etc.
+            String prefix = "uLlumsPuntuals[" + i + "].";
+
+            float[] p = llum.getPosicio();
+            float[] c = llum.getColor();
+
+            GLES30.glUniform3f(programa.getUniformLocation(prefix + "posicio"),
+                    p[0], p[1], p[2]);
+            GLES30.glUniform3f(programa.getUniformLocation(prefix + "color"),
+                    c[0], c[1], c[2]);
+            GLES30.glUniform1f(programa.getUniformLocation(prefix + "intensitat"),
+                    llum.getIntensitat());
+            GLES30.glUniform1f(programa.getUniformLocation(prefix + "atenuacioLineal"),
+                    llum.getAtenuacioLineal());
+            GLES30.glUniform1f(programa.getUniformLocation(prefix + "atenuacioQuadratica"),
+                    llum.getAtenuacioQuadratica());
+        }
     }
 
     public List<LlumPuntual> getLlumsPuntuals() {

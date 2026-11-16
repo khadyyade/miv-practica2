@@ -1,7 +1,7 @@
 package com.example.miv_practica_2.objectes;
 
-import com.example.skeleton.llums.Illuminacio;
-import com.example.skeleton.shaders.GestorShaders;
+import com.example.miv_practica_2.llums.Illuminacio;
+import com.example.miv_practica_2.shaders.GestorShaders;
 
 import java.util.ArrayList;
 import java.util.List;

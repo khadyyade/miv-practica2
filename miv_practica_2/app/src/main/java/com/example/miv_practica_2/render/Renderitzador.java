@@ -5,18 +5,18 @@ import android.content.res.AssetManager;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 
-import com.example.skeleton.llums.Illuminacio;
-import com.example.skeleton.llums.LlumDireccional;
-import com.example.skeleton.llums.LlumPuntual;
-import com.example.skeleton.objectes.CameraOrtografica;
-import com.example.skeleton.objectes.CameraPerspectiva;
-import com.example.skeleton.objectes.CarregadorObj;
-import com.example.skeleton.objectes.Escena;
-import com.example.skeleton.objectes.ObjecteObj;
-import com.example.skeleton.objectes.QuadUI;
-import com.example.skeleton.objectes.Rectangle;
-import com.example.skeleton.objectes.Triangle;
-import com.example.skeleton.shaders.GestorShaders;
+import com.example.miv_practica_2.llums.Illuminacio;
+import com.example.miv_practica_2.llums.LlumDireccional;
+import com.example.miv_practica_2.llums.LlumPuntual;
+import com.example.miv_practica_2.objectes.CameraOrtografica;
+import com.example.miv_practica_2.objectes.CameraPerspectiva;
+import com.example.miv_practica_2.objectes.CarregadorObj;
+import com.example.miv_practica_2.objectes.Escena;
+import com.example.miv_practica_2.objectes.ObjecteObj;
+import com.example.miv_practica_2.objectes.QuadUI;
+import com.example.miv_practica_2.objectes.Rectangle;
+import com.example.miv_practica_2.objectes.Triangle;
+import com.example.miv_practica_2.shaders.GestorShaders;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -183,7 +183,17 @@ public class Renderitzador implements GLSurfaceView.Renderer {
         //   Si la dibuixessis primer, es barrejaria amb el fons i despres el
         //   mon la taparia.
 
-        throw new UnsupportedOperationException("TODO (10/10): onDrawFrame()");
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
+
+        // PASADA 1: mundo 3D
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST);   // los objetos se tapan entre sí
+        GLES30.glDisable(GLES30.GL_BLEND);       // geometría opaca: sin mezcla
+        escena.draw(camera, illuminacio);
+
+        // PASADA 2: interfaz
+        GLES30.glDisable(GLES30.GL_DEPTH_TEST);  // el HUD siempre delante
+        GLES30.glEnable(GLES30.GL_BLEND);        // hud.png tiene transparencias
+        escenaUI.draw(cameraUI, null);           // sin luces: la UI se pinta tal cual
     }
 
     @Override

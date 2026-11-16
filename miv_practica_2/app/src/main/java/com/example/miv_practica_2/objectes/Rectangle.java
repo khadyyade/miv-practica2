@@ -1,6 +1,6 @@
 package com.example.miv_practica_2.objectes;
 
-import com.example.skeleton.shaders.TipusShader;
+import com.example.miv_practica_2.shaders.TipusShader;
 
 /**
  * Rectangle dibuixat amb 2 triangles a partir de 4 vertexs, situat a la meitat

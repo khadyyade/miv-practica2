@@ -1,6 +1,6 @@
 package com.example.miv_practica_2.objectes;
 
-import com.example.skeleton.shaders.TipusShader;
+import com.example.miv_practica_2.shaders.TipusShader;
 
 /**
  * Triangle simple situat a la meitat dreta de la pantalla, amb un color
