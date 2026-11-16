@@ -1,0 +1,13 @@
+#version 300 es
+
+precision mediump float;
+
+// Entrada interpolada provinent del Vertex Shader
+in vec3 vColor;
+
+// Color final del pixel
+out vec4 fragColor;
+
+void main() {
+    fragColor = vec4(vColor, 1.0);
+}

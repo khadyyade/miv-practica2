@@ -1,0 +1,19 @@
+#version 300 es
+
+precision mediump float;
+
+// Coordenada de textura interpolada provinent del Vertex Shader
+in vec2 vTexCoord;
+
+// Unitat de textura de la qual s'ha de mostrejar. El valor que se li assigna
+// amb glUniform1i() es el NUMERO d'unitat (0, 1, 2...), no l'identificador de
+// la textura.
+uniform sampler2D uTextura;
+
+// Color final del pixel
+out vec4 fragColor;
+
+void main() {
+    // A GLSL ES 3.00 la funcio es texture(), no la texture2D() d'ES 2.00.
+    fragColor = texture(uTextura, vTexCoord);
+}

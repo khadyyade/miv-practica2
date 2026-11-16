@@ -1,0 +1,28 @@
+#version 300 es
+
+// Atribut 0: Posicio del vertex (X, Y, Z), en coordenades LOCALS del model
+layout(location = 0) in vec3 aPosition;
+// Atribut 1: Coordenada de textura (U, V)
+layout(location = 1) in vec2 aTexCoord;
+// Atribut 2: Normal del vertex. Encara no s'usa: queda preparada per al dia
+// que s'afegeixi il luminacio, pero el carregador d'OBJ ja la puja al VBO.
+layout(location = 2) in vec3 aNormal;
+
+// Matriu de model: col loca aquest objecte concret dins del mon
+// (escala, rotacio i translacio propies).
+uniform mat4 uModel;
+
+// Producte de la matriu de projeccio per la de vista: passa del mon a NDC.
+// Es la mateixa per a tots els objectes del fotograma.
+uniform mat4 uVistaProjeccio;
+
+// Sortida cap al Fragment Shader (s'interpola entre vertexs)
+out vec2 vTexCoord;
+
+void main() {
+    vTexCoord = aTexCoord;
+
+    // L'ordre es llegeix de dreta a esquerra: el vertex passa de coordenades
+    // locals a coordenades de mon (uModel) i d'alla a NDC (uVistaProjeccio).
+    gl_Position = uVistaProjeccio * uModel * vec4(aPosition, 1.0);
+}

@@ -1,0 +1,38 @@
+#version 300 es
+
+// TODO (2/10): vertex shader del model il luminat.
+//
+//   Es el teu textura.ver de la practica anterior, pero el fragment shader
+//   ara necessita dues coses mes per poder calcular la llum.
+//
+//   ENTRADES. Els tres atributs de sempre: posicio (location 0), coordenada
+//   de textura (location 1) i normal (location 2). Ara la normal SI que es fa
+//   servir.
+//
+//   UNIFORMS. Els dos de sempre, uModel i uVistaProjeccio, mes un de nou:
+//   uMatriuNormal, que ve del TODO 1. Mira ObjecteGrafic per confirmar el nom
+//   exacte que busca amb getUniformLocation().
+//
+//   SORTIDES. Tres:
+//     - la coordenada de textura, com abans;
+//     - la normal en coordenades de MON;
+//     - la posicio del vertex en coordenades de MON.
+//
+//   Per que en coordenades de mon i no de pantalla? Perque la il luminacio es
+//   calcula al mon: el fragment shader ha de poder restar la seva posicio de
+//   la de cada llum per saber en quina direccio li arriba. Si li passessis la
+//   posicio ja projectada, aquesta resta no voldria dir res.
+//
+//   DINS DE main():
+//
+//     a) Calcula la posicio en coordenades de mon multiplicant uModel per la
+//        posicio del vertex. Guarda-te-la: la necessites dues vegades.
+//
+//     b) Passa-la a la sortida corresponent (nomes les tres components xyz).
+//
+//     c) Transforma la normal amb uMatriuNormal. Fes servir mat3(uMatriuNormal)
+//        per quedar-te la submatriu 3x3: una normal es una direccio i NO s'ha
+//        de veure afectada per la translacio, que viu a la quarta columna.
+//
+//     d) Calcula gl_Position aprofitant la posicio de mon que ja tens, en
+//        comptes de tornar a multiplicar per uModel.

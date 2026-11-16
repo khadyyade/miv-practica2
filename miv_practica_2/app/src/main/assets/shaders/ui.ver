@@ -1,0 +1,16 @@
+#version 300 es
+
+// TODO (8/10a): vertex shader de la interficie.
+//
+//   Es el mes senzill de tots els que has escrit. Rep dos atributs, posicio
+//   (location 0) i coordenada de textura (location 1), i les dues matrius de
+//   sempre, uModel i uVistaProjeccio. Treu la coordenada de textura cap al
+//   fragment shader i calcula gl_Position com has fet sempre.
+//
+//   NO hi ha normal ni matriu normal: un element d'interficie no s'il lumina.
+//
+//   El que canvia no es el shader, es el que hi entra. La posicio que rep es
+//   la del QUAD UNITAT, de (0,0) a (1,1), i es uModel qui el porta a la seva
+//   posicio i mida reals en pixels. Reaprofitar el mateix quad per a tots els
+//   elements es el que fa que canviar-ne la mida no costi res: no es torna a
+//   tocar cap buffer, nomes una matriu.

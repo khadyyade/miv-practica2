@@ -1,0 +1,79 @@
+#version 300 es
+
+precision mediump float;
+
+// Ha de coincidir amb Illuminacio.MAX_LLUMS_PUNTUALS. Un array d'un shader ha
+// de tenir mida constant de compilacio: GLSL no admet mides variables.
+const int MAX_LLUMS_PUNTUALS = 4;
+
+// Aquesta estructura i els noms dels seus camps han de coincidir EXACTAMENT
+// amb les cadenes que construeix Illuminacio.aplicaPuntuals(). Obre el fitxer
+// i comprova-ho abans d'escriure res.
+struct LlumPuntual {
+    vec3 posicio;
+    vec3 color;
+    float intensitat;
+    float atenuacioLineal;
+    float atenuacioQuadratica;
+};
+
+// TODO (3/10): fragment shader amb il luminacio de Blinn-Phong.
+//
+//   ENTRADES. Les tres sortides del vertex shader, amb els mateixos noms i
+//   tipus: coordenada de textura, normal de mon i posicio de mon.
+//
+//   UNIFORMS. Mira Illuminacio.java per saber els noms exactes:
+//     - el sampler de la textura;
+//     - el color de la llum ambient;
+//     - direccio, color i intensitat de la llum direccional;
+//     - l'array de LlumPuntual i quantes n'hi ha de valides;
+//     - la posicio de la camera;
+//     - l'exponent especular del material.
+//
+//   EL MODEL D'IL LUMINACIO. Tres components que se sumen:
+//
+//     AMBIENT: una constant. Representa la llum que ha rebotat per l'escena.
+//     Sense ella, tot el que no mira cap a cap llum queda absolutament negre,
+//     cosa que a la realitat gairebe no passa mai.
+//
+//     DIFUS: depen nomes de l'angle entre la normal i la direccio cap a la
+//     llum, amb un producte escalar. Es el que dona el volum. Fes max(..., 0.0)
+//     o les cares que miren a l'altra banda RESTARAN llum.
+//
+//     ESPECULAR: el reflex brillant. Amb Blinn-Phong es calcula el vector
+//     "mig" entre la direccio cap a la llum i la direccio cap a la camera, i
+//     se'n fa el producte escalar amb la normal elevat a l'exponent del
+//     material. Per aixo cal saber on es la camera: un reflex depen del punt
+//     de vista i es mou quan et mous, a diferencia del difus.
+//
+//     Compte: el terme especular no sap res de l'orientacio de la cara, de
+//     manera que apareixerien brillantors a la cara FOSCA dels objectes. Anul la
+//     l'especular quan el difus sigui zero.
+//
+//   LES DUES MENES DE LLUM:
+//
+//     DIRECCIONAL: no te posicio ni s'atenua. El uniform diu cap on VIATGEN
+//     els raigs, i el calcul necessita el vector contrari, del fragment cap a
+//     la llum. Nega'l.
+//
+//     PUNTUALS: recorre'n l'array. Per a cada una, el vector cap a la llum es
+//     la seva posicio menys la posicio del fragment; la seva longitud es la
+//     distancia. Normalitza'l dividint per la distancia, pero amb un max()
+//     per no dividir per zero si un fragment cau just a sobre de la llum.
+//
+//     L'atenuacio es   1 / (1 + lineal*d + quadratica*d*d).
+//
+//     Al bucle, fes que el limit sigui la constant MAX_LLUMS_PUNTUALS i surt
+//     amb un break quan passis del nombre real de llums: alguns compiladors
+//     antics no accepten limits variables en un for.
+//
+//   AL FINAL. Mostreja la textura i MULTIPLICA-LA per la llum acumulada.
+//   Multiplicar i no sumar es el que fa que una superficie vermella sota llum
+//   blava surti gairebe negra: no hi ha vermell per reflectir. Conserva
+//   l'alfa de la textura.
+//
+//   UN CONSELL PER DEPURAR: si no veus res o tot surt negre, escriu de forma
+//   provisional la normal com a color (normal * 0.5 + 0.5). Si el model
+//   apareix pintat de colors suaus i continus, les normals arriben be i el
+//   problema es al calcul de llum. Si surt negre o a trossos, el problema es
+//   abans, al TODO 1 o al TODO 2.

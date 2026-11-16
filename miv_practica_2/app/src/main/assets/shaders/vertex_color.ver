@@ -1,0 +1,24 @@
+#version 300 es
+
+// Atribut 0: Posicio del vertex (X, Y, Z), en coordenades LOCALS del model
+layout(location = 0) in vec3 aPosition;
+// Atribut 1: Color del vertex (R, G, B)
+layout(location = 1) in vec3 aColor;
+
+// Mateixes matrius que textura.ver: aixi tots els objectes de l'escena viuen
+// en el mateix sistema de coordenades i els pot mirar la mateixa camera.
+//
+// Si vols que aquest shader torni a treballar en NDC cru, esborra els dos
+// uniforms i deixa gl_Position = vec4(aPosition, 1.0). El codi Java no cal
+// tocar-lo: quan un uniform no existeix, la seva localitzacio val -1 i
+// glUniformMatrix4fv() no fa res.
+uniform mat4 uModel;
+uniform mat4 uVistaProjeccio;
+
+// Sortida cap al Fragment Shader (s'interpola entre vertexs)
+out vec3 vColor;
+
+void main() {
+    vColor = aColor;
+    gl_Position = uVistaProjeccio * uModel * vec4(aPosition, 1.0);
+}
